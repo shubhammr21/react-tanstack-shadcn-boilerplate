@@ -13,19 +13,20 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
+import { Route as LoginImport } from './routes/_login'
 import { Route as DashboardImport } from './routes/_dashboard'
 
 // Create Virtual Routes
 
 const DashboardIndexLazyImport = createFileRoute('/_dashboard/')()
+const LoginLoginLazyImport = createFileRoute('/_login/login')()
+const DashboardDemo1LazyImport = createFileRoute('/_dashboard/demo1')()
 const DashboardAboutLazyImport = createFileRoute('/_dashboard/about')()
 
 // Create/Update Routes
 
 const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
+  id: '/_login',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -40,6 +41,20 @@ const DashboardIndexLazyRoute = DashboardIndexLazyImport.update({
   getParentRoute: () => DashboardRoute,
 } as any).lazy(() =>
   import('./routes/_dashboard/index.lazy').then((d) => d.Route),
+)
+
+const LoginLoginLazyRoute = LoginLoginLazyImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => LoginRoute,
+} as any).lazy(() => import('./routes/_login/login.lazy').then((d) => d.Route))
+
+const DashboardDemo1LazyRoute = DashboardDemo1LazyImport.update({
+  id: '/demo1',
+  path: '/demo1',
+  getParentRoute: () => DashboardRoute,
+} as any).lazy(() =>
+  import('./routes/_dashboard/demo1.lazy').then((d) => d.Route),
 )
 
 const DashboardAboutLazyRoute = DashboardAboutLazyImport.update({
@@ -61,10 +76,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
+    '/_login': {
+      id: '/_login'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
@@ -74,6 +89,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/about'
       preLoaderRoute: typeof DashboardAboutLazyImport
       parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/demo1': {
+      id: '/_dashboard/demo1'
+      path: '/demo1'
+      fullPath: '/demo1'
+      preLoaderRoute: typeof DashboardDemo1LazyImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_login/login': {
+      id: '/_login/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginLoginLazyImport
+      parentRoute: typeof LoginImport
     }
     '/_dashboard/': {
       id: '/_dashboard/'
@@ -89,11 +118,13 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAboutLazyRoute: typeof DashboardAboutLazyRoute
+  DashboardDemo1LazyRoute: typeof DashboardDemo1LazyRoute
   DashboardIndexLazyRoute: typeof DashboardIndexLazyRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAboutLazyRoute: DashboardAboutLazyRoute,
+  DashboardDemo1LazyRoute: DashboardDemo1LazyRoute,
   DashboardIndexLazyRoute: DashboardIndexLazyRoute,
 }
 
@@ -101,49 +132,66 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface LoginRouteChildren {
+  LoginLoginLazyRoute: typeof LoginLoginLazyRoute
+}
+
+const LoginRouteChildren: LoginRouteChildren = {
+  LoginLoginLazyRoute: LoginLoginLazyRoute,
+}
+
+const LoginRouteWithChildren = LoginRoute._addFileChildren(LoginRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '': typeof DashboardRouteWithChildren
-  '/login': typeof LoginRoute
+  '': typeof LoginRouteWithChildren
   '/about': typeof DashboardAboutLazyRoute
+  '/demo1': typeof DashboardDemo1LazyRoute
+  '/login': typeof LoginLoginLazyRoute
   '/': typeof DashboardIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/login': typeof LoginRoute
+  '': typeof LoginRouteWithChildren
   '/about': typeof DashboardAboutLazyRoute
+  '/demo1': typeof DashboardDemo1LazyRoute
+  '/login': typeof LoginLoginLazyRoute
   '/': typeof DashboardIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_dashboard': typeof DashboardRouteWithChildren
-  '/login': typeof LoginRoute
+  '/_login': typeof LoginRouteWithChildren
   '/_dashboard/about': typeof DashboardAboutLazyRoute
+  '/_dashboard/demo1': typeof DashboardDemo1LazyRoute
+  '/_login/login': typeof LoginLoginLazyRoute
   '/_dashboard/': typeof DashboardIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/about' | '/'
+  fullPaths: '' | '/about' | '/demo1' | '/login' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/about' | '/'
+  to: '' | '/about' | '/demo1' | '/login' | '/'
   id:
     | '__root__'
     | '/_dashboard'
-    | '/login'
+    | '/_login'
     | '/_dashboard/about'
+    | '/_dashboard/demo1'
+    | '/_login/login'
     | '/_dashboard/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
-  LoginRoute: typeof LoginRoute
+  LoginRoute: typeof LoginRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
-  LoginRoute: LoginRoute,
+  LoginRoute: LoginRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -157,22 +205,34 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_dashboard",
-        "/login"
+        "/_login"
       ]
     },
     "/_dashboard": {
       "filePath": "_dashboard.tsx",
       "children": [
         "/_dashboard/about",
+        "/_dashboard/demo1",
         "/_dashboard/"
       ]
     },
-    "/login": {
-      "filePath": "login.tsx"
+    "/_login": {
+      "filePath": "_login.tsx",
+      "children": [
+        "/_login/login"
+      ]
     },
     "/_dashboard/about": {
       "filePath": "_dashboard/about.lazy.tsx",
       "parent": "/_dashboard"
+    },
+    "/_dashboard/demo1": {
+      "filePath": "_dashboard/demo1.lazy.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_login/login": {
+      "filePath": "_login/login.lazy.tsx",
+      "parent": "/_login"
     },
     "/_dashboard/": {
       "filePath": "_dashboard/index.lazy.tsx",
