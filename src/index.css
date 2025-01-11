@@ -77,7 +77,6 @@
 @layer base {
   * {
     @apply border-border;
-    @apply transition-colors duration-150;
   }
   body {
     @apply bg-background text-foreground;
