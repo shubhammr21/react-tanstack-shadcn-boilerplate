@@ -29,6 +29,8 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 
+import { ThemeModeSwitch } from "./mode-switch"
+
 const data = {
   user: {
     name: "shadcn",
@@ -168,6 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-semibold">Acme Inc</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
+                <ThemeModeSwitch />
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
