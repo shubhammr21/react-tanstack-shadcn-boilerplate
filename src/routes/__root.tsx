@@ -3,10 +3,11 @@ import React, { Suspense } from "react"
 import {
   Outlet,
   ScrollRestoration,
-  createRootRoute
+  createRootRouteWithContext
 } from "@tanstack/react-router"
 
 import NotFound from "@/app/not-found"
+import { AuthContext } from "@/hooks/use-auth"
 
 const loadDevtools = () =>
   Promise.all([
@@ -26,7 +27,11 @@ const loadDevtools = () =>
 const TanStackDevtools =
   process.env.NODE_ENV === "production" ? () => null : React.lazy(loadDevtools)
 
-export const Route = createRootRoute({
+type RouterContext = {
+  authentication: AuthContext
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
     <>
       <ScrollRestoration scrollBehavior="smooth" />
