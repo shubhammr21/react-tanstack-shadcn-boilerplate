@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "@tanstack/react-router"
 import {
   BadgeCheck,
   Bell,
@@ -37,6 +38,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
   const { signOut } = useAuth()
 
   return (
@@ -100,7 +102,12 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOut}>
+            <DropdownMenuItem
+              onClick={() => {
+                signOut()
+                router.invalidate()
+              }}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>
