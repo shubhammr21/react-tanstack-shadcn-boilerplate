@@ -1,6 +1,7 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 import { useAuth } from "./hooks/use-auth"
 import { routeTree } from "./routeTree.gen"
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <RouterProvider router={router} context={{ authentication }} />
+      <Toaster />
     </ThemeProvider>
   )
 }
